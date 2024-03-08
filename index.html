@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/current/metro.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Contacts</title>
+</head>
+<body>
+
+<div class="container">
+    <button class="button primary large" id="addContactButton">Add contact</button>
+    <button class="button primary large" id="searchContactButton">Search</button>
+    <button class="button primary large" id="resetContactFilterButton">Reset filter</button>
+    <button class="button primary large" id="clearContactListButton">Clear List</button>
+
+    <div class="contact-container">
+        <div id="contacts">  </div>
+        <div id="alphabet">  </div>
+    </div>
+</div>
+
+<div id="searchDialog" class="dialog" data-role="dialog">
+    <div class="dialog-title">Search Contacts</div>
+    <div class="dialog-content">
+        <div class="form-group">
+            <input type="text" id="searchInput" data-role="input" data-prepend="Search:" placeholder="Enter name or surname">
+        </div>
+        <div id="searchResults"></div>
+    </div>
+</div>
+
+<div class="dialog" data-role="dialog" id="addContactDialog">
+    <div class="dialog-title">Contact</div>
+    <div class="dialog-content">
+        <form id="contactForm">
+            <div class="form-group">
+                <input type="text" id="contactName" data-role="input" data-prepend="Name: " placeholder="Enter name" required>
+            </div>
+            <div class="form-group">
+                <input type="text" id="contactSurname" data-role="input" data-prepend="Surname: " placeholder="Enter surname" required>
+            </div>
+            <div class="form-group">
+                <input type="text" id="contactCompany" data-role="input" data-prepend="Company: " placeholder="Enter company name">
+            </div>
+            <div class="form-group">
+                <input type="text" id="contactPhone" data-role="input" data-prepend="Phone: " placeholder="Enter phone number (0-9)" required pattern="^\+?\d{0,13}">
+            </div>
+            <input type="hidden" id="contactId">
+        </form>
+    </div>
+    <div class="dialog-actions">
+        <button type="button" class="button js-dialog-close">Cancel</button>
+        <button type="button" class="button primary" id="saveContactButton">Save</button>
+        <button type="button" class="button alert" id="deleteContactButton">Delete</button>
+    </div>
+</div>
+<script type="module" src="./dist/app.js"></script>
+<script src="https://cdn.metroui.org.ua/current/metro.js"></script>
+</body>
+</html>

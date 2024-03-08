@@ -1,0 +1,58 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+#contacts, #alphabet {
+    height: 100%;
+}
+
+.contact-tile {
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    font-size: 15pt;
+    height: 120px;
+}
+
+#searchResults {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#contacts {
+    flex-grow: 6;
+    display: inline-flex;
+    flex-wrap: wrap;
+}
+
+.contact-container {
+    padding-top: 40px;
+    display: flex;
+}
+
+#alphabet {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: end;
+    padding: 10px;
+    flex-grow: 1;
+    height: 80vh;
+    max-width: 30vh;
+}
+
+#alphabet button {
+    margin: 5px;
+    width: 70px;
+    height: 70px;
+    font-size: 15pt;
+}
+
+.button.primary.has-contacts {
+    background-color: green; /* Цвет кнопки, если есть контакты */
+}
+
+.button.primary.no-contacts {
+    background-color: blue; /* Цвет кнопки, если контактов нет */
+}
