@@ -181,6 +181,11 @@ class ContactView {
             return false;
         }
     }
+    closeDialogAndRefreshContacts() {
+        this.displayContacts(Array.from(this.contactManager.contacts.values()));
+        this.displayContacts(Array.from(this.contactManager.searchContacts()), "searchResults");
+        Metro.dialog.close('#addContactDialog');
+    }
 }
 class App {
     contactManager;
@@ -201,11 +206,6 @@ class App {
     initializeApp() {
         this.contactManager.loadContactsFromLocalStorage();
         this.contactView.displayContacts(Array.from(this.contactManager.contacts.values()));
-    }
-    closeDialogAndRefreshContacts() {
-        this.contactView.displayContacts(Array.from(this.contactManager.contacts.values()));
-        this.contactView.displayContacts(Array.from(this.contactManager.searchContacts()), "searchResults");
-        Metro.dialog.close('#addContactDialog');
     }
     setupAddContactButton() {
         const button = document.getElementById("addContactButton");
@@ -269,7 +269,7 @@ class App {
             button.addEventListener("click", () => {
                 if (this.contactView.validateForm(form)) {
                     this.contactManager.addContact(this.contactView.readContactFromDialog());
-                    this.closeDialogAndRefreshContacts();
+                    this.contactView.closeDialogAndRefreshContacts();
                 }
             });
         }
@@ -282,7 +282,7 @@ class App {
         if (button) {
             button.addEventListener("click", () => {
                 this.contactManager.deleteContact(this.contactView.readContactFromDialog().id);
-                this.closeDialogAndRefreshContacts();
+                this.contactView.closeDialogAndRefreshContacts();
             });
         }
         else {

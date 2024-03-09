@@ -226,6 +226,12 @@ class ContactView {
             return false;
         }
     }
+
+    public closeDialogAndRefreshContacts(): void {
+        this.displayContacts(Array.from(this.contactManager.contacts.values()));
+        this.displayContacts(Array.from(this.contactManager.searchContacts()), "searchResults");
+        Metro.dialog.close('#addContactDialog');
+    }
 }
 
 class App {
@@ -250,12 +256,6 @@ class App {
     private initializeApp(): void {
         this.contactManager.loadContactsFromLocalStorage();
         this.contactView.displayContacts(Array.from(this.contactManager.contacts.values()));
-    }
-
-    private closeDialogAndRefreshContacts(): void {
-        this.contactView.displayContacts(Array.from(this.contactManager.contacts.values()));
-        this.contactView.displayContacts(Array.from(this.contactManager.searchContacts()), "searchResults");
-        Metro.dialog.close('#addContactDialog');
     }
 
     private setupAddContactButton() : void {
@@ -324,7 +324,7 @@ class App {
             button.addEventListener("click", () : void => {
                 if (this.contactView.validateForm(form)) {
                     this.contactManager.addContact(this.contactView.readContactFromDialog());
-                    this.closeDialogAndRefreshContacts();
+                    this.contactView.closeDialogAndRefreshContacts();
                 }
             });
         } else {
@@ -337,7 +337,7 @@ class App {
         if (button) {
             button.addEventListener("click", () : void => {
                 this.contactManager.deleteContact(this.contactView.readContactFromDialog().id);
-                this.closeDialogAndRefreshContacts();
+                this.contactView.closeDialogAndRefreshContacts();
             });
         } else {
             console.log("deleteContactButton is null");
