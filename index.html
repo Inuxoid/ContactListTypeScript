@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script type="module" src="./dist/app.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="https://cdn.metroui.org.ua/current/metro.css">
@@ -16,8 +17,8 @@
     <button class="button primary large" id="clearContactListButton">Clear List</button>
 
     <div class="contact-container">
-        <div id="contacts">  </div>
-        <div id="alphabet">  </div>
+        <div id="contacts" class="contacts">  </div>
+        <div id="alphabet" class="alphabet">  </div>
     </div>
 </div>
 
@@ -27,7 +28,7 @@
         <div class="form-group">
             <input type="text" id="searchInput" data-role="input" data-prepend="Search:" placeholder="Enter name or surname">
         </div>
-        <div id="searchResults"></div>
+        <div id="searchResults" class="searchResults"></div>
     </div>
 </div>
 
@@ -56,7 +57,6 @@
         <button type="button" class="button alert" id="deleteContactButton">Delete</button>
     </div>
 </div>
-<script type="module" src="./dist/app.js"></script>
 <script src="https://cdn.metroui.org.ua/current/metro.js"></script>
 </body>
 </html>

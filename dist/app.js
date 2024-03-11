@@ -79,10 +79,9 @@ class ContactManager {
             this.updateContactsByLetterCache(value, 'add');
         });
     }
-    searchContacts() {
-        const input = document.getElementById("searchInput");
+    searchContacts(input) {
         if (input) {
-            const uppercasedValue = input.value.toUpperCase();
+            const uppercasedValue = input.toUpperCase();
             const contacts = Array.from(this.contacts.values());
             return contacts.filter((contact) => contact.name.toUpperCase().includes(uppercasedValue) || contact.surname.toUpperCase().includes(uppercasedValue));
         }
@@ -91,8 +90,20 @@ class ContactManager {
 }
 class ContactView {
     contactManager;
+    contactNameInputField;
+    contactSurnameInputField;
+    contactCompanyInputField;
+    contactPhoneInputField;
+    contactIdInputField;
+    deleteContactButton;
     constructor(contactManager) {
         this.contactManager = contactManager;
+        this.deleteContactButton = document.getElementById("deleteContactButton");
+        this.contactNameInputField = document.getElementById('contactName');
+        this.contactSurnameInputField = document.getElementById('contactSurname');
+        this.contactCompanyInputField = document.getElementById('contactCompany');
+        this.contactPhoneInputField = document.getElementById('contactPhone');
+        this.contactIdInputField = document.getElementById('contactId');
     }
     displayContacts(contacts, containerId = 'contacts') {
         const contactsContainer = document.getElementById(containerId);
@@ -144,29 +155,39 @@ class ContactView {
         });
     }
     hasContactsStartingWith(letter) {
-        const contacts = Array.from(this.contactManager.contacts.values());
-        return contacts.some((contact) => contact.name.toUpperCase().startsWith(letter));
+        const contacts = this.contactManager.contactsByLetter.get(letter);
+        return (contacts && contacts.length > 0);
     }
     openEditContactDialog(contact) {
-        document.getElementById("deleteContactButton").hidden = false;
-        document.getElementById('contactName').value = contact.name;
-        document.getElementById('contactSurname').value = contact.surname;
-        document.getElementById('contactCompany').value = contact.company;
-        document.getElementById('contactPhone').value = contact.phone;
-        document.getElementById('contactId').value = contact.id;
+        if (this.deleteContactButton) {
+            this.deleteContactButton.hidden = false;
+        }
+        else {
+            console.log("deleteContactButton is null");
+        }
+        this.contactNameInputField.value = contact.name;
+        this.contactSurnameInputField.value = contact.surname;
+        this.contactPhoneInputField.value = contact.company;
+        this.contactCompanyInputField.value = contact.phone;
+        this.contactIdInputField.value = contact.id;
         Metro.dialog.open('#addContactDialog');
     }
     openAddContactDialog() {
-        document.getElementById("deleteContactButton").hidden = true;
-        document.getElementById('contactName').value = "";
-        document.getElementById('contactSurname').value = "";
-        document.getElementById('contactCompany').value = "";
-        document.getElementById('contactPhone').value = "";
-        document.getElementById('contactId').value = "";
+        if (this.deleteContactButton) {
+            this.deleteContactButton.hidden = true;
+        }
+        else {
+            console.log("deleteContactButton is null");
+        }
+        this.contactNameInputField.value = "";
+        this.contactSurnameInputField.value = "";
+        this.contactPhoneInputField.value = "";
+        this.contactCompanyInputField.value = "";
+        this.contactIdInputField.value = "";
         Metro.dialog.open('#addContactDialog');
     }
     readContactFromDialog() {
-        return new Contact(document.getElementById('contactId').value, document.getElementById('contactName').value, document.getElementById('contactSurname').value, document.getElementById('contactCompany').value, document.getElementById('contactPhone').value);
+        return new Contact(this.contactIdInputField.value, this.contactNameInputField.value, this.contactSurnameInputField.value, this.contactCompanyInputField.value, this.contactPhoneInputField.value);
     }
     displayContactsByLetter(letter) {
         const contacts = this.contactManager.getContactsByLetter(letter);
@@ -183,7 +204,7 @@ class ContactView {
     }
     closeDialogAndRefreshContacts() {
         this.displayContacts(Array.from(this.contactManager.contacts.values()));
-        this.displayContacts(Array.from(this.contactManager.searchContacts()), "searchResults");
+        this.displayContacts(Array.from(this.contactManager.searchContacts("")), "searchResults");
         Metro.dialog.close('#addContactDialog');
     }
 }
@@ -210,7 +231,7 @@ class App {
     setupAddContactButton() {
         const button = document.getElementById("addContactButton");
         if (button) {
-            button.addEventListener("click", this.contactView.openAddContactDialog);
+            button.addEventListener("click", () => this.contactView.openAddContactDialog());
         }
         else {
             console.log("addContactButton is null");
@@ -222,10 +243,10 @@ class App {
         if (button && input) {
             button.addEventListener("click", () => {
                 Metro.dialog.open('#searchDialog');
-                this.contactView.displayContacts(this.contactManager.searchContacts(), "searchResults");
+                this.contactView.displayContacts(this.contactManager.searchContacts(input.value), "searchResults");
             });
             input.addEventListener("input", () => {
-                const filteredContacts = this.contactManager.searchContacts();
+                const filteredContacts = this.contactManager.searchContacts(input.value);
                 this.contactView.displayContacts(filteredContacts, "searchResults");
             });
         }
@@ -290,6 +311,11 @@ class App {
         }
     }
 }
-const app = new App();
+if (document.readyState === "loading") {
+    document.addEventListener('DOMContentLoaded', () => { const app = new App(); });
+}
+else {
+    const app = new App();
+}
 export {};
 //# sourceMappingURL=app.js.map

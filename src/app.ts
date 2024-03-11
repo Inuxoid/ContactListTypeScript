@@ -89,20 +89,19 @@ class ContactManager {
         localStorage.setItem("contacts", JSON.stringify(Array.from(this._contacts.entries())));
     }
 
-    public loadContactsFromLocalStorage() : void {
-        const loadedContacts = JSON.parse(localStorage.getItem("contacts") || "[]");
+    public loadContactsFromLocalStorage(): void {
+        const loadedContacts: [string, IContact][] = JSON.parse(localStorage.getItem("contacts") || "[]");
         this._contacts.clear();
         this._contactsByLetter.clear();
-        loadedContacts.forEach(([key, value]: [string, IContact]) => {
+        loadedContacts.forEach(([key, value]) => {
             this._contacts.set(key, value);
             this.updateContactsByLetterCache(value, 'add');
         });
     }
 
-    public searchContacts() : IContact[] {
-        const input: HTMLInputElement | null = document.getElementById("searchInput") as HTMLInputElement;
+    public searchContacts(input : string) : IContact[] {
         if (input) {
-            const uppercasedValue: string = input.value.toUpperCase();
+            const uppercasedValue: string = input.toUpperCase();
             const contacts : IContact[] = Array.from(this.contacts.values());
             return contacts.filter((contact: IContact) =>
                 contact.name.toUpperCase().includes(uppercasedValue) || contact.surname.toUpperCase().includes(uppercasedValue)
@@ -114,9 +113,21 @@ class ContactManager {
 
 class ContactView {
     private contactManager: ContactManager;
+    private contactNameInputField : HTMLInputElement;
+    private contactSurnameInputField : HTMLInputElement;
+    private contactCompanyInputField : HTMLInputElement;
+    private contactPhoneInputField : HTMLInputElement
+    private contactIdInputField : HTMLInputElement;
+    private deleteContactButton : HTMLButtonElement;
 
     public constructor(contactManager: ContactManager) {
         this.contactManager = contactManager;
+        this.deleteContactButton = document.getElementById("deleteContactButton") as HTMLButtonElement;
+        this.contactNameInputField = document.getElementById('contactName') as HTMLInputElement;
+        this.contactSurnameInputField = document.getElementById('contactSurname') as HTMLInputElement;
+        this.contactCompanyInputField = document.getElementById('contactCompany') as HTMLInputElement;
+        this.contactPhoneInputField = document.getElementById('contactPhone') as HTMLInputElement;
+        this.contactIdInputField = document.getElementById('contactId') as HTMLInputElement;
     }
 
     public displayContacts(contacts: IContact[], containerId: string = 'contacts') : void {
@@ -179,37 +190,45 @@ class ContactView {
     }
 
     private hasContactsStartingWith(letter: string): boolean {
-        const contacts: IContact[] = Array.from(this.contactManager.contacts.values());
-        return contacts.some((contact: IContact) => contact.name.toUpperCase().startsWith(letter));
+        const contacts : IContact[] | undefined = this.contactManager.contactsByLetter.get(letter);
+        return <boolean>(contacts && contacts.length > 0);
     }
 
     public openEditContactDialog(contact : IContact) :void {
-        document.getElementById("deleteContactButton")!.hidden = false;
-        (document.getElementById('contactName') as HTMLInputElement).value = contact.name;
-        (document.getElementById('contactSurname') as HTMLInputElement).value = contact.surname;
-        (document.getElementById('contactCompany') as HTMLInputElement).value = contact.company;
-        (document.getElementById('contactPhone') as HTMLInputElement).value = contact.phone;
-        (document.getElementById('contactId') as HTMLInputElement).value = contact.id;
+        if (this.deleteContactButton) {
+            this.deleteContactButton.hidden = false;
+        } else {
+            console.log("deleteContactButton is null");
+        }
+        this.contactNameInputField.value = contact.name;
+        this.contactSurnameInputField.value = contact.surname;
+        this.contactPhoneInputField.value = contact.company;
+        this.contactCompanyInputField.value = contact.phone;
+        this.contactIdInputField.value = contact.id;
         Metro.dialog.open('#addContactDialog');
     }
 
     public openAddContactDialog() : void {
-        document.getElementById("deleteContactButton")!.hidden = true;
-        (document.getElementById('contactName') as HTMLInputElement).value = "";
-        (document.getElementById('contactSurname') as HTMLInputElement).value = "";
-        (document.getElementById('contactCompany') as HTMLInputElement).value = "";
-        (document.getElementById('contactPhone') as HTMLInputElement).value = "";
-        (document.getElementById('contactId') as HTMLInputElement).value = "";
+        if (this.deleteContactButton) {
+            this.deleteContactButton.hidden = true;
+        } else {
+            console.log("deleteContactButton is null");
+        }
+        this.contactNameInputField.value = "";
+        this.contactSurnameInputField.value = "";
+        this.contactPhoneInputField.value = "";
+        this.contactCompanyInputField.value = "";
+        this.contactIdInputField.value = "";
         Metro.dialog.open('#addContactDialog');
     }
 
     public readContactFromDialog() : IContact {
         return new Contact(
-            (document.getElementById('contactId') as HTMLInputElement).value,
-            (document.getElementById('contactName') as HTMLInputElement).value,
-            (document.getElementById('contactSurname') as HTMLInputElement).value,
-            (document.getElementById('contactCompany') as HTMLInputElement).value,
-            (document.getElementById('contactPhone') as HTMLInputElement).value,
+            this.contactIdInputField.value,
+            this.contactNameInputField.value,
+            this.contactSurnameInputField.value,
+            this.contactCompanyInputField.value,
+            this.contactPhoneInputField.value,
         );
     }
 
@@ -229,7 +248,7 @@ class ContactView {
 
     public closeDialogAndRefreshContacts(): void {
         this.displayContacts(Array.from(this.contactManager.contacts.values()));
-        this.displayContacts(Array.from(this.contactManager.searchContacts()), "searchResults");
+        this.displayContacts(Array.from(this.contactManager.searchContacts("")), "searchResults");
         Metro.dialog.close('#addContactDialog');
     }
 }
@@ -258,10 +277,11 @@ class App {
         this.contactView.displayContacts(Array.from(this.contactManager.contacts.values()));
     }
 
-    private setupAddContactButton() : void {
-        const button : HTMLButtonElement | null = document.getElementById("addContactButton") as HTMLButtonElement | null;
+    private setupAddContactButton(): void {
+        const button: HTMLButtonElement | null = document.getElementById("addContactButton") as HTMLButtonElement | null;
         if (button) {
-            button.addEventListener("click", this.contactView.openAddContactDialog);
+            // Использование стрелочной функции для сохранения контекста this
+            button.addEventListener("click", () => this.contactView.openAddContactDialog());
         } else {
             console.log("addContactButton is null");
         }
@@ -274,11 +294,11 @@ class App {
         if (button && input) {
             button.addEventListener("click", () => {
                 Metro.dialog.open('#searchDialog');
-                this.contactView.displayContacts(this.contactManager.searchContacts(), "searchResults");
+                this.contactView.displayContacts(this.contactManager.searchContacts(input.value), "searchResults");
             });
 
             input.addEventListener("input", () => {
-                const filteredContacts = this.contactManager.searchContacts();
+                const filteredContacts = this.contactManager.searchContacts(input.value);
                 this.contactView.displayContacts(filteredContacts, "searchResults");
             });
         } else {
@@ -345,5 +365,10 @@ class App {
     }
 }
 
-const app: App = new App();
+if (document.readyState === "loading") {
+    document.addEventListener('DOMContentLoaded', ()=> {const app = new App()});
+} else {
+    const app = new App();
+}
+
 export { };
