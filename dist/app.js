@@ -1,4 +1,4 @@
-const uuidv4 = (await import('../node_modules/uuid/dist/esm-browser/v4.js')).default;
+const uuidv4 = (await import('../uuid/dist/esm-browser/v4.js')).default;
 class Contact {
     id;
     name;

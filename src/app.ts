@@ -1,6 +1,6 @@
 
 // @ts-ignore
-const uuidv4 = (await import('../node_modules/uuid/dist/esm-browser/v4.js')).default as any;
+const uuidv4 = (await import('../uuid/dist/esm-browser/v4.js')).default as any;
 
 interface IContact {
     id: string;
