@@ -3,10 +3,6 @@ html, body {
     margin: 0;
 }
 
-.contacts, .alphabet {
-    height: 100%;
-}
-
 .contact-tile {
     padding: 10px;
     margin: 5px;
@@ -15,12 +11,17 @@ html, body {
     height: 120px;
 }
 
+.primary {
+    margin: 0 5px 5px;
+}
+
 .searchResults {
     max-height: 400px;
     overflow-y: auto;
 }
 
 .contacts {
+    height: 100%;
     flex-grow: 6;
     display: inline-flex;
     flex-wrap: wrap;
