@@ -39,8 +39,7 @@ html, body {
     align-items: end;
     padding: 10px;
     flex-grow: 1;
-    height: 80vh;
-    max-width: 30vh;
+    max-width: 25%;
 }
 
 .alphabet button {
